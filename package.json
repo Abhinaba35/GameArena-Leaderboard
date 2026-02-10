@@ -1,0 +1,11 @@
+{
+  "name": "gamearena-leaderboard",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "generate-docs": "node scripts/generateDocumentation.js"
+  },
+  "devDependencies": {
+    "docx": "^9.5.1"
+  }
+}
