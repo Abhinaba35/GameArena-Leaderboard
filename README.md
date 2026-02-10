@@ -42,46 +42,6 @@ A production-ready, full-stack gaming leaderboard system designed to handle mill
 - **WebSocket**: Socket.io-client
 - **Styling**: Pure CSS with animations
 
-## Architecture
-
-### High-Level Design
-
-```
-┌─────────────┐         ┌──────────────┐         ┌─────────────┐
-│   Frontend  │◄───────►│   Backend    │◄───────►│  PostgreSQL │
-│   (React)   │ HTTP/WS │  (Express)   │  Prisma │  (Database) │
-└─────────────┘         └──────────────┘         └─────────────┘
-                               │
-                    ┌──────────┼──────────┐
-                    ▼          ▼          ▼
-              ┌─────────┐ ┌────────┐ ┌──────────┐
-              │  Redis  │ │ BullMQ │ │ New Relic│
-              │ (Cache) │ │(Queue) │ │   (APM)  │
-              └─────────┘ └────────┘ └──────────┘
-```
-
-### Database Schema
-
-```sql
-users
-├── id (PK)
-├── username (unique, indexed)
-└── join_date
-
-game_sessions
-├── id (PK)
-├── user_id (FK → users.id, indexed)
-├── score (indexed)
-├── game_mode
-└── timestamp (indexed)
-
-leaderboard
-├── id (PK)
-├── user_id (FK → users.id, unique, indexed)
-├── total_score (indexed DESC)
-└── rank (indexed)
-```
-
 ### Key Optimizations
 
 1. **Database Indexing**
@@ -113,7 +73,7 @@ leaderboard
    - Rate-limited job processing (5 jobs/second)
    - Automatic retry with exponential backoff
 
-## 📦 Installation
+## Installation
 
 ### Prerequisites
 - Node.js 18+ 
@@ -169,7 +129,7 @@ npm run build
 npm run preview
 ```
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -212,7 +172,7 @@ VITE_API_BASE_URL=http://localhost:8000/api/leaderboard
 VITE_SOCKET_URL=http://localhost:8000
 ```
 
-## 📚 API Documentation
+## API Documentation
 
 ### Endpoints
 
@@ -337,20 +297,17 @@ Manually trigger a full rank recalculation job.
 }
 ```
 
-## 🧪 Testing & Load Simulation
+## Testing & Load Simulation
 
 ### Database Seeding
 
 ```bash
-# Populate database with test data
-# Creates 1M users and 5M game sessions
 npm run seed
 ```
 
 ### Load Simulation
 
 ```bash
-# Run continuous load simulation
 npm run simulate
 ```
 
@@ -378,7 +335,7 @@ Requests/sec: 10.38
 ========================================
 ```
 
-## 📊 Performance Optimization Results
+## Performance Optimization Results
 
 ### Before Optimization
 - Top players query: ~500ms
@@ -391,14 +348,14 @@ Requests/sec: 10.38
 - Score submission: **~50ms** (75% improvement with optimized transaction)
 
 ### Scalability Achievements
-- ✅ Handles 1M+ users
-- ✅ Processes 5M+ game sessions
-- ✅ Sub-100ms API latency at scale
-- ✅ Real-time updates with <50ms broadcast time
-- ✅ Cache hit rate: >95%
-- ✅ Database connection pool: efficiently managed
+- Handles 1M+ users
+- Processes 5M+ game sessions
+- Sub-100ms API latency at scale
+- Real-time updates with <50ms broadcast time
+- Cache hit rate: >95%
+- Database connection pool: efficiently managed
 
-## 🔍 Monitoring with New Relic
+## Monitoring with New Relic
 
 ### Setup
 
@@ -438,30 +395,23 @@ NEW_RELIC_ENABLED=true
 ### Client → Server
 
 ```javascript
-// Request current leaderboard
 socket.emit('leaderboard:request');
 ```
 
 ### Server → Client
 
 ```javascript
-// Leaderboard update notification
 socket.on('leaderboard:updated', (data) => {
-  // data: { userId, score, timestamp }
 });
 
-// Leaderboard data response
 socket.on('leaderboard:data', (players) => {
-  // players: Array of top players
 });
 
-// Error handling
 socket.on('leaderboard:error', (error) => {
-  // error: { message }
 });
 ```
 
-## 🔒 Security Features
+## Security Features
 
 1. **Rate Limiting**
    - 100 requests per minute per IP
@@ -482,7 +432,7 @@ socket.on('leaderboard:error', (error) => {
    - Comprehensive logging
    - Graceful degradation
 
-## 🚧 Production Deployment Checklist
+## Production Deployment Checklist
 
 - [ ] Set `NODE_ENV=production`
 - [ ] Configure production database
@@ -501,55 +451,9 @@ socket.on('leaderboard:error', (error) => {
 - [ ] Set up automated testing
 - [ ] Configure auto-scaling
 
-## 📁 Project Structure
 
-```
-gamearena-leaderboard/
-├── backend/
-│   ├── config/
-│   │   ├── database.js          # Prisma client setup
-│   │   ├── redis.js             # Redis configuration
-│   │   ├── queues.js            # BullMQ queue setup
-│   │   └── logger.js            # Winston logger
-│   ├── controllers/
-│   │   └── leaderboardController.js
-│   ├── services/
-│   │   └── leaderboardService.js  # Core business logic
-│   ├── routes/
-│   │   └── leaderboardRoutes.js
-│   ├── middleware/
-│   │   └── errorHandler.js       # Error handling
-│   ├── jobs/
-│   │   └── workers.js            # Background job workers
-│   ├── utils/
-│   │   └── validation.js         # Zod schemas
-│   ├── scripts/
-│   │   ├── seedDatabase.js       # Database seeding
-│   │   └── loadSimulation.js     # Load testing
-│   ├── prisma/
-│   │   └── schema.prisma         # Database schema
-│   ├── newrelic.js               # New Relic config
-│   ├── server.js                 # Main entry point
-│   └── package.json
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── LeaderboardTable.jsx
-│   │   │   ├── PlayerRankSearch.jsx
-│   │   │   └── LiveIndicator.jsx
-│   │   ├── services/
-│   │   │   ├── api.js           # API client
-│   │   │   └── socket.js        # Socket.io client
-│   │   ├── App.jsx              # Main component
-│   │   ├── App.css
-│   │   └── main.jsx
-│   ├── index.html
-│   ├── vite.config.js
-│   └── package.json
-└── README.md
-```
 
-## 🎯 Design Decisions & Trade-offs
+## Design Decisions & Trade-offs
 
 ### 1. PostgreSQL vs NoSQL
 **Decision**: PostgreSQL with Prisma
@@ -598,7 +502,7 @@ gamearena-leaderboard/
 
 **Trade-off**: Slightly heavier vs SSE, but more flexible
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -606,13 +510,6 @@ gamearena-leaderboard/
 4. Write tests
 5. Submit a pull request
 
-## 📄 License
-
-MIT License - feel free to use this project for learning and development.
-
-## 👨‍💻 Author
-
-Built as a production-ready demonstration of scalable leaderboard systems with modern web technologies.
 
 ---
 
