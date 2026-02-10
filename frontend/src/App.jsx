@@ -145,7 +145,7 @@ function App() {
         <div className="footer-content">
           <div className="footer-built-by">
             
-            Built with passion by Abhinaba
+            Built by Abhinaba
           </div>
           <div className="footer-links">
             <a href="#" className="footer-link">Privacy Policy</a>

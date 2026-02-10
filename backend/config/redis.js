@@ -19,19 +19,33 @@ const CACHE_TTL = {
 
 function getRedisClient() {
   if (!redisClient) {
-    redisClient = new Redis({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT) || 6379,
-      password: process.env.REDIS_PASSWORD || undefined,
-      retryStrategy: (times) => {
-        const delay = Math.min(times * 50, 2000);
-        return delay;
-      },
-      maxRetriesPerRequest: 3,
-      enableReadyCheck: true,
-      lazyConnect: false,
-      keepAlive: 30000,
-    });
+    const redisUrl = process.env.REDIS_URL;
+    if (redisUrl) {
+      redisClient = new Redis(redisUrl, {
+        retryStrategy: (times) => {
+          const delay = Math.min(times * 50, 2000);
+          return delay;
+        },
+        maxRetriesPerRequest: 3,
+        enableReadyCheck: true,
+        lazyConnect: false,
+        keepAlive: 30000,
+      });
+    } else {
+      redisClient = new Redis({
+        host: process.env.REDIS_HOST || 'localhost',
+        port: parseInt(process.env.REDIS_PORT) || 6379,
+        password: process.env.REDIS_PASSWORD || undefined,
+        retryStrategy: (times) => {
+          const delay = Math.min(times * 50, 2000);
+          return delay;
+        },
+        maxRetriesPerRequest: 3,
+        enableReadyCheck: true,
+        lazyConnect: false,
+        keepAlive: 30000,
+      });
+    }
 
     redisClient.on('connect', () => {
       logger.info('Redis client connected');

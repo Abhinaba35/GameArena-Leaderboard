@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { getPlayerRank } from '../services/api';
-import './PlayerRankSearch.css';
 
 const PlayerRankSearch = () => {
   const [userId, setUserId] = useState('');

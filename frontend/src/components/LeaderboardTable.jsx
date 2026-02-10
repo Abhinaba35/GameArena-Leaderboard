@@ -1,5 +1,4 @@
 import React from 'react';
-import './LeaderboardTable.css';
 
 const LeaderboardTable = ({ players, loading, error }) => {
   if (error) {

@@ -1,5 +1,4 @@
 import React from 'react';
-import './LiveIndicator.css';
 
 const LiveIndicator = ({ isConnected, lastUpdate }) => {
   return (
