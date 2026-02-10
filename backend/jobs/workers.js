@@ -3,7 +3,7 @@ const { recalculateAllRanks } = require('../services/leaderboardService');
 const { getTopPlayers } = require('../services/leaderboardService');
 const logger = require('../config/logger');
 
-const connection = {
+const connection = process.env.REDIS_URL || {
   host: process.env.REDIS_HOST || 'localhost',
   port: parseInt(process.env.REDIS_PORT) || 6379,
   password: process.env.REDIS_PASSWORD || undefined,

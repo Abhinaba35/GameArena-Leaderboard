@@ -1,14 +1,3 @@
-/**
- * GameArena - Real-Time Scalable Gaming Leaderboard System
- * 
- * Main server file with:
- * - Express app configuration
- * - Socket.io for real-time updates
- * - New Relic APM integration
- * - Graceful shutdown handling
- */
-
-// Load New Relic first (must be before any other require)
 if (process.env.NEW_RELIC_ENABLED === 'true') {
   require('newrelic');
 }
@@ -35,7 +24,6 @@ const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const app = express();
 const server = http.createServer(app);
 
-// Socket.io configuration
 const io = new Server(server, {
   cors: {
     origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
@@ -45,12 +33,10 @@ const io = new Server(server, {
   transports: ['websocket', 'polling'],
 });
 
-// Set Socket.io instance in controller
 leaderboardController.setSocketIO(io);
 
-// Middleware
-app.use(helmet()); // Security headers
-app.use(compression()); // Response compression
+app.use(helmet());
+app.use(compression());
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
   credentials: true,
@@ -58,9 +44,8 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rate limiting
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 60000, // 1 minute
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 60000, 
   max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
   message: {
     success: false,
@@ -70,10 +55,8 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Apply rate limiting to API routes
 app.use('/api/', limiter);
 
-// Request logging middleware
 app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
@@ -89,7 +72,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
@@ -99,28 +81,21 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API routes
 app.use('/api/leaderboard', leaderboardRoutes);
 
-// 404 handler
 app.use(notFoundHandler);
 
-// Global error handler
 app.use(errorHandler);
 
-// Socket.io connection handling
 io.on('connection', (socket) => {
   logger.info(`Client connected: ${socket.id}`);
 
-  // Join leaderboard room
   socket.join('leaderboard');
 
-  // Handle disconnection
   socket.on('disconnect', () => {
     logger.info(`Client disconnected: ${socket.id}`);
   });
 
-  // Client can request current leaderboard
   socket.on('leaderboard:request', async () => {
     try {
       const { getTopPlayers } = require('./services/leaderboardService');
@@ -133,20 +108,16 @@ io.on('connection', (socket) => {
   });
 });
 
-// Initialize connections
 async function initializeApp() {
   try {
-    // Initialize Prisma
     const prisma = getPrismaClient();
     await prisma.$connect();
     logger.info('Database connected successfully');
 
-    // Initialize Redis
     const redis = getRedisClient();
     await redis.ping();
     logger.info('Redis connected successfully');
 
-    // Start workers
     require('./jobs/workers');
     logger.info('Background workers started');
 
@@ -157,16 +128,13 @@ async function initializeApp() {
   }
 }
 
-// Graceful shutdown
 async function gracefulShutdown(signal) {
   logger.info(`${signal} received. Starting graceful shutdown...`);
 
-  // Stop accepting new requests
   server.close(() => {
     logger.info('HTTP server closed');
   });
 
-  // Close all connections
   try {
     await closeWorkers();
     await closeQueues();
@@ -180,11 +148,9 @@ async function gracefulShutdown(signal) {
   }
 }
 
-// Handle shutdown signals
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
-// Handle uncaught errors
 process.on('uncaughtException', (error) => {
   logger.error('Uncaught Exception', error);
   gracefulShutdown('UNCAUGHT_EXCEPTION');
@@ -195,15 +161,14 @@ process.on('unhandledRejection', (reason, promise) => {
   gracefulShutdown('UNHANDLED_REJECTION');
 });
 
-// Start server
 const PORT = process.env.PORT || 8000;
 
 initializeApp().then(() => {
   server.listen(PORT, () => {
-    logger.info(`🚀 Server running on port ${PORT}`);
-    logger.info(`📊 Environment: ${process.env.NODE_ENV}`);
-    logger.info(`🔗 Socket.io enabled for real-time updates`);
-    logger.info(`📈 New Relic monitoring: ${process.env.NEW_RELIC_ENABLED === 'true' ? 'enabled' : 'disabled'}`);
+    logger.info(`Server running on port ${PORT}`);
+    logger.info(`Environment: ${process.env.NODE_ENV}`);
+    logger.info(`Socket.io enabled for real-time updates`);
+    logger.info(`New Relic monitoring: ${process.env.NEW_RELIC_ENABLED === 'true' ? 'enabled' : 'disabled'}`);
   });
 });
 
