@@ -145,6 +145,7 @@ NODE_ENV=development
 # Redis
 REDIS_HOST=localhost
 REDIS_PORT=6379
+REDIS_URL=http://localhost:6379 
 
 # Cache TTL (seconds)
 LEADERBOARD_CACHE_TTL=60
@@ -390,7 +391,7 @@ NEW_RELIC_ENABLED=true
   - Alerting on slow responses
   - Transaction traces
 
-## 🌐 WebSocket Events
+## WebSocket Events
 
 ### Client → Server
 
