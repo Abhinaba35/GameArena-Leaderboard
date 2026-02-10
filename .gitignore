@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+*.log
+newrelic_agent.log
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Prisma
+prisma/migrations/*
+!prisma/migrations/.gitkeep
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+.cache/
+tmp/
+temp/
+
+ARCHITECTURE.md
+PERFORMANCE.md
+PROJECT_PROPOSAL.md
+QUICKSTART.md
+PROJECT_SUMMARY.md
+README.md

@@ -1,0 +1,81 @@
+.leaderboard-table-container {
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 24px 16px;
+  margin-top: 24px;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--surface);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(79, 140, 255, 0.06);
+}
+
+.leaderboard-table th, .leaderboard-table td {
+  padding: 14px 12px;
+  text-align: left;
+  font-size: 1rem;
+}
+
+.leaderboard-table th {
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  color: #fff;
+  font-weight: 700;
+  border-bottom: 2px solid var(--primary);
+}
+
+.leaderboard-table tr {
+  transition: background 0.15s;
+}
+
+.leaderboard-table tr:nth-child(even) {
+  background: var(--background);
+}
+
+.leaderboard-table tr:hover {
+  background: #63e5f1; /* Use a deep indigo for hover */
+  color: #fff;
+}
+
+.leaderboard-table tr:hover .score-cell {
+  color: #ffe066; 
+}
+
+.rank-cell, .score-cell {
+  font-weight: 700;
+}
+
+.rank-cell {
+  color: var(--secondary);
+}
+
+.score-cell {
+  color: #10b981; 
+  font-weight: 700;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+.player-avatar {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: #fff;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  margin-right: 8px;
+}
+
+@media (max-width: 600px) {
+  .leaderboard-table th, .leaderboard-table td {
+    padding: 8px 4px;
+    font-size: 0.95rem;
+  }
+}

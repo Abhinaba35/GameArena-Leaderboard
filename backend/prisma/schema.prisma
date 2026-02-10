@@ -1,0 +1,50 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int            @id
+  username     String         @unique @db.VarChar(255)
+  joinDate     DateTime       @default(now()) @map("join_date")
+  
+  gameSessions GameSession[]
+  leaderboards  Leaderboards?
+  
+  @@map("users")
+}
+
+model GameSession {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  score     Int
+  gameMode  String   @map("game_mode") @db.VarChar(50)
+  timestamp DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Composite index for efficient aggregation queries
+  @@index([userId, timestamp])
+  @@index([userId, score])
+  @@index([timestamp])
+  @@map("game_sessions")
+}
+
+model Leaderboards {
+  id         Int  @id @default(autoincrement())
+  userId     Int  @unique @map("user_id")
+  totalScore Int  @map("total_score")
+  rank       Int?
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Critical index for fast leaderboard queries
+  @@index([totalScore(sort: Desc), userId])
+  @@index([rank])
+  @@map("leaderboards")
+}
