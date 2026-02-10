@@ -62,7 +62,7 @@ const PlayerRankSearch = () => {
             className="search-button"
             disabled={loading}
           >
-            {loading ? 'Searching...' : '🔍 Search'}
+            {loading ? 'Searching...' : 'Search'}
           </button>
           {(userId || rankData) && (
             <button 

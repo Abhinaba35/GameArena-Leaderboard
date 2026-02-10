@@ -1,14 +1,19 @@
 const { Worker } = require('bullmq');
+const IORedis = require('ioredis');
 const { recalculateAllRanks } = require('../services/leaderboardService');
 const { getTopPlayers } = require('../services/leaderboardService');
 const logger = require('../config/logger');
 
-const connection = process.env.REDIS_URL || {
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT) || 6379,
-  password: process.env.REDIS_PASSWORD || undefined,
-};
-
+const connection = process.env.REDIS_URL
+  ? { connection: new IORedis(process.env.REDIS_URL, { maxRetriesPerRequest: null }) }
+  : {
+      connection: {
+        host: process.env.REDIS_HOST || '127.0.0.1',
+        port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+        password: process.env.REDIS_PASSWORD || undefined,
+        maxRetriesPerRequest: null,
+      }
+    };
 
 const rankRecalculationWorker = new Worker(
   'rank-recalculation',
@@ -32,7 +37,7 @@ const rankRecalculationWorker = new Worker(
     }
   },
   {
-    connection,
+    ...connection,
     concurrency: 2, 
     limiter: {
       max: 5, 
@@ -59,7 +64,7 @@ const cacheWarmingWorker = new Worker(
     }
   },
   {
-    connection,
+    ...connection,
     concurrency: 1,
   }
 );
