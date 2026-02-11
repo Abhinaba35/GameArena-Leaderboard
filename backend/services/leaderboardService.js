@@ -73,7 +73,7 @@ async function submitScore(userId, score, gameMode = 'solo') {
       totalScore: result.totalScore 
     });
 
-    return result.leaderboardsEntry;
+    return result.leaderboardEntry;
 
   } catch (error) {
     logger.error('Failed to submit score', { userId, score, error: error.message });
